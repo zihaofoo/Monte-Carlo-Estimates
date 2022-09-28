@@ -27,7 +27,7 @@ def func_X_U(u_vec, alpha = 1.5):
 
 alpha = 1.5
 num_samples = 10000
-num_MC_points = 100000
+num_MC_points = 1000
 pow_vec = np.ones(num_samples, dtype = int)
 # pow_vec = np.arange(start = 1, stop = 10, step = 1)
 num_vec = num_MC_points ** pow_vec
@@ -52,24 +52,40 @@ for i1 in range(num_vec.shape[0]):
 # plt.savefig('Q1a.pdf')
 # plt.show()
 
+# print('Number of MC points: ', num_MC_points, '\n' + 'Average: ', np.average(exp_vec))
+# print('Variance: ', np.var(exp_vec), '\n' + 'Skewness: ', stats.skew(exp_vec), '\n' + 'Kurtosis: ', stats.kurtosis(exp_vec))
 
 ## Code to calculate Q1(b)
+# exp_vec = (exp_vec - np.average(exp_vec)) / ( np.sqrt(np.var(exp_vec) / num_MC_points)  ) 
+
 print('Number of MC points: ', num_MC_points, '\n' + 'Average: ', np.average(exp_vec))
 print('Variance: ', np.var(exp_vec), '\n' + 'Skewness: ', stats.skew(exp_vec), '\n' + 'Kurtosis: ', stats.kurtosis(exp_vec))
 
-
-## Code to plot Q1(a)
-bins = np.linspace(start = 0, stop = 5, num = 100)
+bins = np.linspace(start = 0, stop = 5, num = 1000)
 fig, ax = plt.subplots(figsize = (6,6))
 ax.hist(exp_vec, bins, color = 'maroon', label = 'Monte Carlo')
-ax.plot([3, 3], [0, num_samples], linewidth = 1.5, color = 'blue', label = 'Analytical')
+# ax.plot([0, 0], [0, num_samples / np.sqrt(num_samples)], linewidth = 1.5, color = 'blue', label = 'Analytical')
 ax.set_ylabel('Frequency of values, $f$', fontsize = 12)
 ax.set_xlabel('Expected value of X, $E_X (x)$', fontsize = 12)
 ax.set_title('Histogram for n = ' + str(num_vec[0]))
-ax.set_ybound([0, num_samples] )
+# ax.set_ybound([0, num_samples])
 plt.legend()
-# plt.savefig('Q1a' + str(num_vec[0]) + '.eps')
+# plt.savefig('Q1b' + str(num_vec[0]) + '.eps')
 plt.show()
+
+
+## Code to plot Q1(a)
+# bins = np.linspace(start = 0, stop = 5, num = 100)
+# fig, ax = plt.subplots(figsize = (6,6))
+# ax.hist(exp_vec, bins, color = 'maroon', label = 'Monte Carlo')
+# ax.plot([3, 3], [0, num_samples], linewidth = 1.5, color = 'blue', label = 'Analytical')
+# ax.set_ylabel('Frequency of values, $f$', fontsize = 12)
+# ax.set_xlabel('Expected value of X, $E_X (x)$', fontsize = 12)
+# ax.set_title('Histogram for n = ' + str(num_vec[0]))
+# ax.set_ybound([0, num_samples] )
+# plt.legend()
+# # plt.savefig('Q1a' + str(num_vec[0]) + '.eps')
+# plt.show()
 
 
 ## Code to visualize f_X
