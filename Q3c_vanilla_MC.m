@@ -1,4 +1,4 @@
-%% Solution Script to Question 3b
+%% Solution Script to Question 3c
 clear all 
 clc
 
@@ -17,7 +17,8 @@ source = 5.0;           % s(x) = 5
 rightbc = 1.0;          % u_r = 1
 x_loc = 0.6;            % Location of random variable
 
-num_MC = [50, 100, 500, 1000, 5000, 10000];
+% num_MC = [50, 100, 500, 1000, 5000, 10000];
+num_MC = 1E+8;
 % u_val_vec = zeros(num_MC, 1);
 h_n = zeros(length(num_MC), 1);
 h_n_sq = zeros(length(num_MC), 1);
@@ -26,6 +27,7 @@ sigma_u_sq = zeros(length(num_MC), 1);
 del_x_confi = zeros(length(num_MC), 1);
 var_val_vec = zeros(length(num_MC), 1);
 
+u_0 = 40;
 %% Initialization
 xgrid = linspace(start_x, end_x, num_x)';
 F = normrnd(mu_F, sigma_F);     % Sampling from Gaussian for F(w)
@@ -62,19 +64,23 @@ for i2 = 1:length(num_MC)
     sigma_u_sq(i2) = sqrt(var((u_val_vec - h_n(i2)).^2, 0));
 
     del_x_confi(i2) = h_n(i2) + (sigma_u(i2) * 1.62 / sqrt(num_MC(i2)) );
+    
+    u_RE_bool = u_val_vec > u_0;
+    sum(u_RE_bool)
+    
 end
 var_n = h_n_sq - h_n.^2; 
 
 % Expectation of u(x=0.6)
-figure(1)
-plot((num_MC), (h_n))
-axis('square')
-xlabel('Number of sample points in MC simulation', 'FontSize', 18)
-ylabel('Expected value from MC simulation', 'FontSize', 18)
+% figure(1)
+% plot((num_MC), (h_n))
+% axis('square')
+% xlabel('Number of sample points in MC simulation', 'FontSize', 18)
+% ylabel('Expected value from MC simulation', 'FontSize', 18)
 
 % Variance of u(x=0.6)
-figure(2)
-plot((num_MC), (var_val_vec), 'k- ^', 'LineWidth', 2)
-axis('square')
-xlabel('Number of sample points in MC simulation', 'FontSize', 18)
-ylabel('Expected variance from MC simulation', 'FontSize', 18)
+% figure(2)
+% plot((num_MC), (var_val_vec), 'k- ^', 'LineWidth', 2)
+% axis('square')
+% xlabel('Number of sample points in MC simulation', 'FontSize', 18)
+% ylabel('Expected variance from MC simulation', 'FontSize', 18)
