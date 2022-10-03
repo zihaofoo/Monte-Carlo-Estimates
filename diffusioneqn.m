@@ -1,4 +1,4 @@
-function [usolution] = diffusioneqn(xgrid, F, k, source, rightbc )
+function [usolution] = diffusioneqn(xgrid, F, k, source, rightbc)
 % diffusion.m: 
 %
 % Solve 1-D diffusion equation with given diffusivity field k

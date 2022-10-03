@@ -5,7 +5,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 from scipy.stats import norm
-
+from scipy.integrate import quad
 
 def PDF_pi_tilde(x):
     """ Returns the PDF value of x based on pi_tilde distribution"""
@@ -15,6 +15,16 @@ def PDF_phi(x):
     """Returns the PDF value of a standard normal density"""
     return np.exp(-0.5 * x**2) / np.sqrt(2 * np.pi)
 
+def Int_pi(x):
+    """ Returns the value of x^2 * PDF value of x based on pi_tilde distribution"""
+    return (x ** 2) * PDF_pi_tilde(x)
+
+## Integration results from quadratures
+I_numer_unnorm, _ = quad(Int_pi, a = -np.inf, b = np.inf) 
+I_numer_denorm, _ = quad(PDF_pi_tilde, a = -np.inf, b = np.inf) 
+I_numerics = I_numer_unnorm / I_numer_denorm
+
+print('Numerical estimate of I: ', I_numerics)
 
 ## Code for Q2b
 C = 20                          # Scaling constant to support g(x)
@@ -55,7 +65,7 @@ ax.set_xlabel('Number of accepted samples, $n(t)$', fontsize = 12)
 ax.set_xbound([0, 2*counter_iter_max])
 ax.set_ybound([0, counter_iter_max])
 plt.legend()
-plt.savefig('Q2b_histogram.eps')
+# plt.savefig('Q2b_histogram.eps')
 plt.show()
 
 # Code for I(t)
@@ -69,5 +79,5 @@ ax.set_xlabel('Monte Carlo estimate, $I_{IS}^t$', fontsize = 12)
 # ax.set_xbound([0, counter_iter_max])
 # ax.set_ybound([0, counter_iter_max / 2])
 plt.legend()
-plt.savefig('Q2b_MCestimate.eps')
+# plt.savefig('Q2b_MCestimate.eps')
 plt.show()
