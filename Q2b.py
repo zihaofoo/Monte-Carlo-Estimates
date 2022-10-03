@@ -28,7 +28,7 @@ print('Numerical estimate of I: ', I_numerics)
 
 ## Code for Q2b
 C = 20                          # Scaling constant to support g(x)
-n_MC = 10000                     # Number of independent MC simulations
+n_MC = 100                     # Number of independent MC simulations
 mu_phi, sigma_phi = 0, 1        # mean and standard deviation of standard Gassuain
 counter_iter_max = 1000         # value of t
 num_size = counter_iter_max

@@ -119,9 +119,9 @@ for i1 in range(len(t_vec)):
 # I_var_combo = I_var_combo / I_var_combo[-1]
 
 fig, ax = plt.subplots(figsize = (10,10))
-ax.loglog(t_vec, np.abs(I_mean_rej - I_numerics), linestyle = '-', linewidth = 1.5, color = 'maroon', label = 'Rejection Sampling')
-ax.loglog(t_vec, np.abs(I_mean_imp  - I_numerics), linestyle = '-', linewidth = 1.5, color = 'navy', label = 'Importance Sampling')
-ax.loglog(t_vec, np.abs(I_mean_combo  - I_numerics), linestyle = '-', linewidth = 1.5, color = 'darkgreen', label = 'Combo')
+# ax.loglog(t_vec, np.abs(I_mean_rej - I_numerics)**2, linestyle = '-', linewidth = 1.5, color = 'maroon', label = 'Rejection Sampling')
+ax.loglog(t_vec, np.abs(I_mean_imp  - I_numerics)**2, linestyle = '-', linewidth = 1.5, color = 'navy', label = 'Importance Sampling')
+# ax.loglog(t_vec, np.abs(I_mean_combo  - I_numerics)**2, linestyle = '-', linewidth = 1.5, color = 'darkgreen', label = 'Combo')
 ax.loglog([t_vec[0], t_vec[-1]], [0.5E1 / t_vec[0], 1E1 / t_vec[-1] ], linestyle = '-.', linewidth = 1.5, color = 'green', label = 'Linear Convergence' )
 ax.loglog([t_vec[0], t_vec[-1]], [5E1 / t_vec[0]**2, 5E1 / t_vec[-1]**2 ], linestyle = '-.', linewidth = 1.5, color = 'red', label = 'Quadratric Convergence' )
 ax.set_xlabel('Number of Monte-Carlo samples, $t$', fontsize = 18)
@@ -129,7 +129,7 @@ ax.set_ylabel('Absolute error in estimator, $ I_{MC} - I_{Quad}$', fontsize = 18
 # ax.set_ylabel('Normalized Variances, $ Var[I(t)] / Var [I(t = t_{max} )]$', fontsize = 12)
 # ax.set_ylabel('Variances, $ Var[I(t)] $', fontsize = 12)
 ax.legend()
-plt.savefig('Q2d_fig1.eps')
+# plt.savefig('Q2d_fig1.eps')
 plt.show()
 
 # fig, ax = plt.subplots(figsize = (10,10))
