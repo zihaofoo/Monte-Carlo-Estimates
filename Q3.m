@@ -20,11 +20,12 @@ x_loc = 0.6;
 %% Initialization
 xgrid = linspace(start_x, end_x, num_x)';
 F = normrnd(mu_F, sigma_F);     % Sampling from Gaussian for F(w)
-Y1 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y2 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y3 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y4 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y = [Y1; Y2; Y3; Y4];           % Initialize for Y
+Y1 = normrnd(mu_Y, sigma_Y, 1);
+Y2 = normrnd(mu_Y, sigma_Y, 1);
+Y3 = normrnd(mu_Y, sigma_Y, 1);
+Y4 = normrnd(mu_Y, sigma_Y, 1);
+   
+Y = [Y1 * ones(num_x / 4, 1); Y2  * ones(num_x / 4, 1); Y3 * ones(num_x / 4, 1); Y4 * ones(num_x / 4, 1)];           % Initialize for Y
 k = exp(Y);
 
 %% Numerical Solver

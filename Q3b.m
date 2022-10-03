@@ -5,7 +5,7 @@ clc
 %% Variable definition
 start_x = 0.0;
 end_x = 1.0;
-num_x = 1000;           
+num_x = 100;           
 
 mu_F = -2.0;
 sigma_F = sqrt(0.5);
@@ -17,7 +17,7 @@ source = 5.0;           % s(x) = 5
 rightbc = 1.0;          % u_r = 1
 x_loc = 0.6;            % Location of random variable
 
-num_MC = [50, 100, 500, 1000, 5000, 10000];
+num_MC = [50, 100, 500, 1000, 5000, 10000, 50000];
 % u_val_vec = zeros(num_MC, 1);
 h_n = zeros(length(num_MC), 1);
 h_n_sq = zeros(length(num_MC), 1);
@@ -25,16 +25,6 @@ sigma_u = zeros(length(num_MC), 1);
 sigma_u_sq = zeros(length(num_MC), 1);
 del_x_confi = zeros(length(num_MC), 1);
 var_val_vec = zeros(length(num_MC), 1);
-
-%% Initialization
-xgrid = linspace(start_x, end_x, num_x)';
-F = normrnd(mu_F, sigma_F);     % Sampling from Gaussian for F(w)
-Y1 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y2 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y3 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y4 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y = [Y1; Y2; Y3; Y4];           % Initialize for Y
-k = exp(Y);
 
 %% Monte Carlo Estimator
 
