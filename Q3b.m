@@ -51,10 +51,10 @@ for i2 = 1:length(num_MC)
 
     var_val_vec(i2) = sum( (u_val_vec - h_n(i2)).^2 ) / length(u_val_vec);
 
-    sigma_u(i2) = sqrt(var(u_val_vec, 0));
-    sigma_u_sq(i2) = sqrt(var((u_val_vec - h_n(i2)).^2, 0));
+    sigma_u(i2) = sqrt(var(u_val_vec, 1));
+    sigma_u_sq(i2) = sqrt(var((u_val_vec - h_n(i2)).^2, 1) / length(u_val_vec)) ;
 
-    del_x_confi(i2) = h_n(i2) + (sigma_u(i2) * 1.62 / sqrt(num_MC(i2)) );
+    del_x_confi(i2) = h_n(i2) - (sigma_u(i2) * 1.62 / sqrt(num_MC(i2)) );
 end
 var_n = h_n_sq - h_n.^2; 
 

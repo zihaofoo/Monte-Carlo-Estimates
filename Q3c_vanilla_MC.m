@@ -17,8 +17,8 @@ source = 5.0;           % s(x) = 5
 rightbc = 1.0;          % u_r = 1
 x_loc = 0.6;            % Location of random variable
 
-% num_MC = [50, 100, 500, 1000, 5000, 10000];
-num_MC = 1E+8;
+num_MC = [1E+1, 1E+2, 1E+3, 1E+4, 1E+5];
+% num_MC = [1E+4, 1E+5];
 % u_val_vec = zeros(num_MC, 1);
 h_n = zeros(length(num_MC), 1);
 h_n_sq = zeros(length(num_MC), 1);
@@ -28,49 +28,42 @@ del_x_confi = zeros(length(num_MC), 1);
 var_val_vec = zeros(length(num_MC), 1);
 
 u_0 = 40;
-%% Initialization
-xgrid = linspace(start_x, end_x, num_x)';
-F = normrnd(mu_F, sigma_F);     % Sampling from Gaussian for F(w)
-Y1 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y2 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y3 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y4 = normrnd(mu_Y, sigma_Y, num_x / 4, 1);
-Y = [Y1; Y2; Y3; Y4];           % Initialize for Y
-k = exp(Y);
+num_variance = 10;
+p_vec = zeros(length(num_MC), 1);
+var_vec = zeros(length(num_MC), 1);
 
 %% Monte Carlo Estimator
 
-for i2 = 1:length(num_MC)
+for i3 = 1:length(num_MC)
+    p = zeros(num_variance, 1);
 
-    u_val_vec = zeros(num_MC(i2), 1);
+    for i2 = 1:num_variance
 
-    for i1 = 1:num_MC(i2)
-        u_val_vec(i1) = Q3_solver(x_loc);
+        u_val_vec = zeros(num_MC(i3), 1);
+
+        for i1 = 1:num_MC(i3)
+            u_val_vec(i1) = Q3_solver(x_loc);
+        end
+        
+        u_RE_bool = u_val_vec > u_0;
+        p(i2) = sum(u_RE_bool)/ num_MC(i3);
+
     end
-    
-    % figure(1)
-    % histogram(u_val_vec, 1000)
-    % set(gca,'FontSize', 20)
-    % axis('square')
-    % xlabel('u (x = 0.6, \omega)', 'FontSize', 18)
-    % ylabel('Frequency of MC estimate', 'FontSize', 18)
-
-    h_n(i2) = sum(u_val_vec) / length(u_val_vec);
-    h_n_sq(i2) = sum(u_val_vec .^2) / length(u_val_vec);
-
-    var_val_vec(i2) = sum( (u_val_vec - h_n(i2)).^2 ) / length(u_val_vec);
-
-    sigma_u(i2) = sqrt(var(u_val_vec, 0));
-    sigma_u_sq(i2) = sqrt(var((u_val_vec - h_n(i2)).^2, 0));
-
-    del_x_confi(i2) = h_n(i2) + (sigma_u(i2) * 1.62 / sqrt(num_MC(i2)) );
-    
-    u_RE_bool = u_val_vec > u_0;
-    sum(u_RE_bool)
-    
+    p_vec(i3) = mean(p);
+    var_vec(i3) = var(p, 1);
 end
-var_n = h_n_sq - h_n.^2; 
 
+sqrt(num_MC') .* sqrt(var_vec) ./ p_vec
+
+figure(1)
+plot(num_MC, p_vec, 'k - o', 'LineWidth', 2)
+ylabel('Expected value p from MC simulation', 'FontSize', 18)
+
+yyaxis right
+plot(num_MC, sqrt(var_vec), 'r - o', 'LineWidth', 2)
+xlabel('Number of sample points in MC simulation', 'FontSize', 18)
+ylabel('Standard error of p from MC simulation', 'FontSize', 18)
+axis('square')
 % Expectation of u(x=0.6)
 % figure(1)
 % plot((num_MC), (h_n))
