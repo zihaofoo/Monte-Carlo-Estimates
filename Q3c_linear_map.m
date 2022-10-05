@@ -10,7 +10,7 @@ num_x = 200;
 mu_F = -2.0;
 sigma_F = sqrt(0.5);
 
-mu_Y = -1.0;
+mu_Y = 10;
 sigma_Y = sqrt(1.0);
 
 source = 5.0;           % s(x) = 5
@@ -45,10 +45,14 @@ for i2 = 1:length(num_MC)
 
 
     end
-
-    x_params = [2.0637, -0.0807, -0.0683, -0.0654, -0.0610, -1.1237];
+    
+    x0 = [1, 1, 1, 1, 1, 1]; 
+    fun = @(x_vec) lin_regression_sub(x_vec, Y1, Y2, Y3, Y4, F, u_val_vec);
+    options_set = optimoptions(@fsolve, 'Algorithm', 'trust-region', 'Display','iter', 'FunctionTolerance', 1E-16);
+    x_params = fsolve(fun, x0, options_set); 
+    % x_params = [2.0637, -0.0807, -0.0683, -0.0654, -0.0610, -1.1237];
     W = solver_linear_map(x_params, Y1, Y2, Y3, Y4, F);
-    mu_W = x_params(1) + (x_params(2) * mu_Y) + (x_params(3) * mu_Y) + (x_params(4) * mu_Y) + (x_params(5) * mu_Y) + (x_params(6) * mu_F); 
+    mu_W = ( x_params(1) + (x_params(2) * mu_Y) + (x_params(3) * mu_Y) + (x_params(4) * mu_Y) + (x_params(5) * mu_Y) + (x_params(6) * mu_F)); 
 
     cov_U_W = mean(u_val_vec .* W) - (mean(u_val_vec) * mean(W));
     c_ast = - cov_U_W / var(W);  
