@@ -1,4 +1,4 @@
-%% Solution Script to Question 3c 
+%% Solution Script to Question 3b 
 clear all 
 clc
 

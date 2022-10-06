@@ -18,7 +18,7 @@ rightbc = 1.0;          % u_r = 1
 x_loc = 0.6;            % Location of random variable
 
 num_MC = [1E+1, 1E+2, 1E+3, 1E+4, 1E+5];
-% num_MC = [1E+4, 1E+5];
+num_MC = 5E+3;
 % u_val_vec = zeros(num_MC, 1);
 h_n = zeros(length(num_MC), 1);
 h_n_sq = zeros(length(num_MC), 1);
@@ -28,7 +28,7 @@ del_x_confi = zeros(length(num_MC), 1);
 var_val_vec = zeros(length(num_MC), 1);
 
 u_0 = 40;
-num_variance = 10;
+num_variance = 100;
 p_vec = zeros(length(num_MC), 1);
 var_vec = zeros(length(num_MC), 1);
 
@@ -53,7 +53,7 @@ for i3 = 1:length(num_MC)
     var_vec(i3) = var(p, 1);
 end
 
-sqrt(num_MC') .* sqrt(var_vec) ./ p_vec
+error_num = sqrt(num_MC') .* sqrt(var_vec) ./ p_vec
 
 figure(1)
 plot(num_MC, p_vec, 'k - o', 'LineWidth', 2)
