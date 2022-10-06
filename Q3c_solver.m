@@ -26,4 +26,3 @@ function [u_val] = Q3c_solver(x_loc, x_vec)
     
     u_val = usolution(x_coord);
 end
-

@@ -27,7 +27,7 @@ def func_X_U(u_vec, alpha = 1.5):
 
 alpha = 1.5
 num_samples = 10000
-num_MC_points = 1000
+num_MC_points = 10
 pow_vec = np.ones(num_samples, dtype = int)
 # pow_vec = np.arange(start = 1, stop = 10, step = 1)
 num_vec = num_MC_points ** pow_vec

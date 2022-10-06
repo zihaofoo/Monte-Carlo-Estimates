@@ -12,12 +12,12 @@ sigma_Y = sqrt(1.0);
 
 %% Cross Entropy Optimizer
 num_MC = 1E+2;
-mu_init = 3;
-sigma_init = 2;
-opt_max = 25;
+mu_init = -2;
+sigma_init = 0.5;
+opt_max = 100;
 
-theta_j_vec = [mu_init * ones(5,1); sigma_init];
-% theta_j_vec = [mu_Y * ones(4,1); mu_F; sigma_Y]; 
+% theta_j_vec = [mu_init * ones(5,1); sigma_init];
+theta_j_vec = [mu_Y * ones(4,1); mu_F; sigma_Y]; 
 theta_0 = [mu_init * ones(5,1); sigma_init];
 x_mat = zeros(5, num_MC);
 theta_mat = zeros(length(theta_j_vec), opt_max);
@@ -30,11 +30,12 @@ for i1 = 1:opt_max
         x_mat(:, i2) = Q3c_sample_g(theta_j_vec); 
     end
     
-    fun = @(theta_jp1_vec) Q3c_J_fun(theta_jp1_vec, x_mat, theta_j_vec);
-    % options_set = optimoptions(@fminunc, 'Algorithm',  'quasi-newton', 'Display','iter', 'FunctionTolerance', 1E-16);
-    options_set = optimoptions(@fminunc, 'Algorithm', 'quasi-newton');
-    % options_set = optimset('Display', 'final', 'MaxFunEvals', 1E5)
-    theta_jp1_params = fminunc(fun, theta_j_vec, options_set); 
+    mean_vec = mean(x_mat, 2);
+    theta_mu = mean_vec(1:5);
+    theta_sigma = sqrt(mean((x_mat - theta_mu).^2, 'all'));
+
+    theta_jp1_params = [theta_mu; theta_sigma];
+ 
     theta_j_vec = theta_jp1_params; 
     theta_mat(:, i1) = theta_jp1_params;
 
@@ -67,6 +68,7 @@ for i4 = 1:num_variance
     end
 
     u_RE_bool = u_val_vec > u_0;
+    % sum(u_RE_bool)
     p(i4) = sum( pi_val_vec(u_RE_bool) ./ g_val_vec(u_RE_bool) ) / length(u_val_vec); 
 end
     p_vec = mean(p);
