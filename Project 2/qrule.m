@@ -1,4 +1,4 @@
-function [bp,wf]=qrule(n,wfun,alpha,beta)
+function [bp,wf]=qrule(n, wfun, alpha, beta)
 %QRULE compute abscissas and weight factors for Gaussian quadratures
 %
 %CALL:  [bp,wf]=qrule(n,wfun,alpha,beta)
