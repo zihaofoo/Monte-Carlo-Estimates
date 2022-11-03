@@ -1,5 +1,5 @@
 %% Total order (total degree) multi-indices
-tomil = TotalOrderMultiIndexLattice(3, 2);
+tomil = TotalOrderMultiIndexLattice(2, 2);
 % first argument is the dimension, second argument is the polynomial degree
 % (l_1 truncation)
 tomil.init();
