@@ -1,5 +1,5 @@
 
-function [Y_r, sigma_prime] = Y_r_KL_expansion(x_pos, num_eig)
+function [Y_r, eigen_vals_vec] = Y_r_KL_expansion_old(x_pos, num_eig)
 
     if (nargin<2 || isempty(num_eig))
         num_eig = 10;
@@ -36,6 +36,7 @@ function [Y_r, sigma_prime] = Y_r_KL_expansion(x_pos, num_eig)
     for i1 = 1:num_eig
         Y_r = Y_r + (sqrt(eigen_vals_vec(i1)) * eigen_tilde_vec(i1) * Z_rand(i1)); 
         sigma_prime(i1) = sqrt(eigen_vals_vec(i1)) * eigen_tilde_vec(i1);
+        
     end
     
 end
