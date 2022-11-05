@@ -4,22 +4,22 @@ clc
 x_pos = 0.5;
 mu = 1.0;
 
-num_points_n = 3;
-num_points_p = 4;
+num_points_n = 10;
+num_points_p = 10;
 
 n_dim = linspace(1, num_points_n, num_points_n);
 p_deg = linspace(1, num_points_p, num_points_p);
-p_deg = 5;
+% p_deg = 2;
+% n_dim = 10;
 
 figure(1)
 hold on
 box on
-
 y_plot = zeros(length(n_dim), length(p_deg));
 
 for i1 = 1:length(n_dim)
     for i2 = 1:length(p_deg)
-        y_plot(i1, i2) = k_TD_PCE(x_pos, n_dim(i1), p_deg(i2), mu);
+        y_plot(i1, i2) = k_TD_PCE(x_pos, n_dim(i1), p_deg(i2), mu, 1);
     end
     
     plot(p_deg, (y_plot(i1, :) / y_plot(i1, end)), '^ -', 'LineWidth', 2, 'MarkerSize', 8) 

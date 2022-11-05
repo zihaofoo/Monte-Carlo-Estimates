@@ -15,12 +15,15 @@ function k_sample = k_TD_PCE(x_pos, n_dim, p_deg, mu, num_sample)
         [~, sigma_prime] = Y_r_KL_expansion(x_pos, n_dim); 
         sigma_prime = real(sigma_prime);
 
+        ((sigma_prime .^ 2) / 2)
         k_PCE = 0;
         He_vec = hermite_poly(x_pos, p_deg);
 
         for i1 = 1:num_PCE_terms
             C_alpha_vec = C_alpha(mu, sigma_prime, Mtotalorder(i1, :));
-            He_alpha = prod(He_vec(Mtotalorder(i1, :) + 1));
+            He_alpha = 1; 
+            He_alpha = He_alpha * prod(He_vec(Mtotalorder(i1, :) + 1)); 
+       
             k_PCE = k_PCE + (C_alpha_vec * He_alpha); 
         end
     

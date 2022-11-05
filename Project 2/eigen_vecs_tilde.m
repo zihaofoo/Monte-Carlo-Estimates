@@ -1,5 +1,7 @@
 
 function output = eigen_vecs_tilde(x_pos, num_eig)
+    % Computes the eigenvectors at non-quadrature points
+
 
     % Initialization
     if (nargin<2 || isempty(num_eig))
@@ -17,9 +19,7 @@ function output = eigen_vecs_tilde(x_pos, num_eig)
     C_mat = zeros(length(x_quad), length(x_quad));
 
     for i1 = 1:length(x_quad)
-        for i2 = 1:length(x_quad)
-            C_mat(i1, i2) = Cov_func(x_quad(i1), x_quad(i2), params_vec);   % Matrix of covariance
-        end    
+         C_mat(i1, :) = Cov_func(x_quad(:), x_quad(i1), params_vec);   % Matrix of covariance
     end
 
     [phi_mat, lambda_mat] = eig(W_root_mat * C_mat * W_root_mat);
@@ -36,7 +36,7 @@ function output = eigen_vecs_tilde(x_pos, num_eig)
             tilde_sum_i = tilde_sum_i + (Cov_func(x_pos, x_quad(i4), params_vec) * weight_quad(i4) * eigen_vecs_mat(i4, i3)); 
         end
         
-        psi_tilde_vec(i3) = tilde_sum_i / eigen_vals_vec(i3);
+        psi_tilde_vec(i3) = tilde_sum_i / eigen_vals_vec(i3);   % Divide sum by the eigenvalue.
     end
     
     output = psi_tilde_vec; 

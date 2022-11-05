@@ -1,5 +1,5 @@
 
-function output = Y_r_KL_expansion(x_pos, num_eig)
+function [Y_r, sigma_prime] = Y_r_KL_expansion(x_pos, num_eig)
 
     if (nargin<2 || isempty(num_eig))
         num_eig = 10;
@@ -17,11 +17,15 @@ function output = Y_r_KL_expansion(x_pos, num_eig)
     C_mat = zeros(length(x_quad), length(x_quad));
 
     for i1 = 1:length(x_quad)
-        for i2 = 1:length(x_quad)
-            C_mat(i1, i2) = Cov_func(x_quad(i1), x_quad(i2), params_vec);   % Matrix of covariance
-        end    
+        C_mat(i1, :) = Cov_func(x_quad(i1), x_quad, params_vec);   % Matrix of covariance
     end
 
+    for i1 = 1:length(x_quad)
+        for i2 = 1:length(x_quad)
+        C_mat(i1, :) = Cov_func(x_quad(i1), x_quad, params_vec);   % Matrix of covariance
+    
+        end
+    end
     [phi_mat, lambda_mat] = eig(W_root_mat * C_mat * W_root_mat);
     eigen_vals_vec = diag(lambda_mat);              % Eigenvalues for KL expansion
     eigen_vecs_mat = W_root_mat \ phi_mat;     % Eigenvectors for KL expansion
@@ -31,12 +35,16 @@ function output = Y_r_KL_expansion(x_pos, num_eig)
     Z_rand = normrnd(0, 1, num_eig, 1);
     eigen_tilde_vec = eigen_vecs_tilde(x_pos, num_eig); 
 
-    sigma_prime = zeros(num_eig, 1);
+    sigma_prime = zeros(1, num_eig);
     
+    % Y_r = sum(sqrt(eigen_vals_vec) .* eigen_tilde_vec .* Z_rand); 
+    % sigma_prime = sum(sqrt(eigen_vals_vec) .* eigen_tilde_vec);
+
+  
     for i1 = 1:num_eig
         Y_r = Y_r + (sqrt(eigen_vals_vec(i1)) * eigen_tilde_vec(i1) * Z_rand(i1)); 
-        sigma_prime(i1) = sqrt(eigen_vals_vec(i1)) * eigen_tilde_vec(i1)
+        sigma_prime(i1) = sqrt(eigen_vals_vec(i1)) * eigen_tilde_vec(i1);
     end
-
-    output = Y_r;
+    %}
+    
 end
