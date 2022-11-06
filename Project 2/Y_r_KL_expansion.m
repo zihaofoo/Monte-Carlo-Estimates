@@ -1,8 +1,12 @@
 
-function [Y_r, sigma_prime] = Y_r_KL_expansion(x_pos, num_eig)
+function [Y_r, sigma_prime] = Y_r_KL_expansion(x_pos, num_eig, Z_rand)
 
     if (nargin<2 || isempty(num_eig))
         num_eig = 10;
+    end	
+
+    if (nargin<3 || isempty(Z_rand))
+        Z_rand = normrnd(0, 1, [num_eig, 1]);
     end	
 
     mu_Y = 1.0;
@@ -12,6 +16,9 @@ function [Y_r, sigma_prime] = Y_r_KL_expansion(x_pos, num_eig)
     params_vec = [sigma_Y_sq, L, p];
 
     [x_quad, weight_quad] = qrule(num_eig); 
+    x_quad = x_quad ./ 2 + 0.5; 
+    weight_quad = weight_quad ./ 2;
+    
     W_root_mat = diag(sqrt(weight_quad)); 
     C_mat = zeros(length(x_quad), length(x_quad));
 
@@ -23,7 +30,6 @@ function [Y_r, sigma_prime] = Y_r_KL_expansion(x_pos, num_eig)
     eigen_vals_vec = diag(lambda_mat);              % Eigenvalues for KL expansion
     eigen_vecs_mat = W_root_mat \ phi_mat;          % Eigenvectors for KL expansion
 
-    Z_rand = normrnd(0, 1, [num_eig, 1]);
     eigen_tilde_vec = eigen_vecs_tilde(x_pos, num_eig); 
 
     Y_r = sum(sqrt(eigen_vals_vec) .* eigen_tilde_vec .* Z_rand) + mu_Y;

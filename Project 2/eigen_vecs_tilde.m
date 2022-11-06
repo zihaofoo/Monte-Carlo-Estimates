@@ -15,6 +15,9 @@ function output = eigen_vecs_tilde(x_pos, num_eig)
     params_vec = [sigma_Y_sq, L, p];
 
     [x_quad, weight_quad] = qrule(num_eig); 
+    x_quad = x_quad ./ 2 + 0.5; 
+    weight_quad = weight_quad ./ 2;
+    
     W_root_mat = diag(sqrt(weight_quad)); 
     C_mat = zeros(length(x_quad), length(x_quad));
 
@@ -39,5 +42,5 @@ function output = eigen_vecs_tilde(x_pos, num_eig)
         psi_tilde_vec(i3) = tilde_sum_i / eigen_vals_vec(i3);   % Divide sum by the eigenvalue.
     end
     
-    output = psi_tilde_vec; 
+    output = (psi_tilde_vec); 
 end
