@@ -1,0 +1,20 @@
+
+
+function [output] = solver_least_sq(n_dim, p_deg, num_MC, x_loc, num_sample)
+    
+    [error_vec, c_vec] = least_sq_func(n_dim, p_deg, num_MC, x_loc);
+                
+    F_MC(:, i2) = (F - mu_F) / sigma_F;
+Z_rand = normrnd(0, 1, [n_dim, 1]);
+      F = normrnd(mu_F, sigma_F);     % Sampling from Gaussian for F(w)
+    F = (F - mu_F) / sigma_F;
+]
+
+
+    tomil = TotalOrderMultiIndexLattice(n_dim + 1, p_deg);
+    tomil.init();
+    Mtotalorder = tomil.get_midx_matrix();
+
+    num_PCE_terms = size(Mtotalorder, 1);
+    z_vec = vertcat(Z_rand_MC, F_MC);
+end

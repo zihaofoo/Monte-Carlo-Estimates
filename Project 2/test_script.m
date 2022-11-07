@@ -1,12 +1,12 @@
 clear all
 clc
 
-n_dim = 20;
-p_deg = 2;
+n_dim = 5;
+p_deg = 5;
 mu_Y = 1;
 x_pos = 0.5;
 sigma_sq = 0.3;
-num_sample = 1;
+num_sample = 100;
 y_sample = zeros(num_sample, 1);
  
 var_analytical = (exp(sigma_sq) - 1) * exp(2 * mu_Y + sigma_sq);

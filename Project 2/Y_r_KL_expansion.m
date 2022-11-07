@@ -35,14 +35,4 @@ function [Y_r, sigma_prime] = Y_r_KL_expansion(x_pos, num_eig, Z_rand)
     Y_r = sum(sqrt(eigen_vals_vec) .* eigen_tilde_vec .* Z_rand) + mu_Y;
     sigma_prime = (sqrt(eigen_vals_vec) .* eigen_tilde_vec)';
     
-    %{
-    Y_r = 0 + mu_Y;
-
-    sigma_prime = zeros(1, num_eig);
-
-    for i1 = 1:num_eig
-        Y_r = Y_r + (sqrt(eigen_vals_vec(i1)) * eigen_tilde_vec(i1) * Z_rand(i1)); 
-        sigma_prime(i1) = sqrt(eigen_vals_vec(i1)) * eigen_tilde_vec(i1);
-    end
-    %}
 end
