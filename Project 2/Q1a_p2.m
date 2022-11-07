@@ -7,9 +7,10 @@ mu = 1.0;
 num_points_n = 20;
 num_points_p = 5;
 
-n_dim = linspace(1, num_points_n, num_points_n);
-p_deg = linspace(1, num_points_p, num_points_p);
-% p_deg = 2;
+n_dim = [1, 6, 11, 16];
+% n_dim = linspace(1, num_points_n, num_points_n);
+% p_deg = linspace(1, num_points_p, num_points_p);
+p_deg = 2;
 % n_dim = 10;
 
 figure(1)
@@ -25,15 +26,18 @@ for i1 = 1:length(n_dim)
         y_var(i1, i2) = abs(var(k_sample));
     end
     
-    plot(p_deg, y_plot(i1, :), '^ -', 'LineWidth', 2, 'MarkerSize', 8) 
-    % plot(n_dim, (y_plot(i1, :)), '^ -', 'LineWidth', 2, 'MarkerSize', 8) 
+    % plot(p_deg, y_plot(i1, :), '^ -', 'LineWidth', 2, 'MarkerSize', 8) 
+    plot(n_dim, (y_plot(i1, :)), '^ -', 'LineWidth', 2, 'MarkerSize', 8)
+    plot(n_dim, (y_var(i1, :)), '^ -', 'LineWidth', 2, 'MarkerSize', 8)
+
     i1
    
 end
 
 xlabel('Number of Polynomial Degree, P')
 ylabel('Normalized Polynomial Chaos Expansion, k^{*}(x,\omega)')
-ylabel('Error of Polynomial Chaos Expansion, k^{*}(x,\omega) - e')
+legend()
+% ylabel('Error of Polynomial Chaos Expansion, k^{*}(x,\omega) - e')
 
 axis('square')
 
