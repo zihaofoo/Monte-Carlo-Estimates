@@ -47,7 +47,7 @@ R = mvnrnd(mu * ones(num_x, 1), cov_x_mat, num_MC)';
 k_untruncated = exp(R);
 
 %% ODE Solver
-x_loc = 0.5;
+x_loc = 0.75;
 
 u_val_PCE = zeros(num_MC, 1);
 u_val_KL = zeros(num_MC, 1);
@@ -78,7 +78,7 @@ histogram(u_val_PCE, 30)
 title('PCE')
 mu_PCE = mean(u_val_PCE)
 var_PCE = var(u_val_PCE)
-
+axis('square')
 
 figure(2)
 hold on
@@ -87,6 +87,7 @@ histogram(u_val_KL, 30)
 title('KL of Y')
 mu_KL = mean(u_val_KL)
 var_KL = var(u_val_KL)
+axis('square')
 
 
 figure(3)
@@ -96,6 +97,8 @@ histogram(u_val_untruncated, 30)
 title('Untruncated Y')
 mu_untrunc= mean(u_val_untruncated)
 var_untrunc = var(u_val_untruncated)
+axis('square')
+
 
 figure(4)
 hold on
@@ -128,6 +131,11 @@ plot(xgrid, u_mean_untruncated, 'r', 'LineWidth', 1.5)
 plot(xgrid, u_mean_KL, 'b', 'LineWidth', 1.5)
 plot(xgrid, u_mean_PCE, 'k', 'LineWidth', 1.5)
 
+xlabel('X coordinate, x')
+ylabel('Mean field solution, u(x)')
+axis('square')
+legend('Untruncated', 'KL Expansion', 'PCE')
+title('n = 5, p = 2')
 
 %% Covariance Field 
 u_mean_KL = mean(usol_KL, 2);

@@ -5,19 +5,18 @@ x_pos = 0.5;
 mu = 1.0;
 
 num_points_n = 20;
-num_points_p = 5;
+num_points_p = 3;
 
-% n_dim = [1, 3, 6, 11, 13, 16, 21];
-n_dim = 5;
-% n_dim = linspace(1, num_points_n, num_points_n);
-% p_deg = linspace(1, num_points_p, num_points_p);
-p_deg = [0, 1, 2, 3, 4, 5];
+n_dim = [1, 11, 21];
+% n_dim = 5;
+% n_dim = linspace(1, num_points_n, num_points_n); 
+p_deg = linspace(1, num_points_p, num_points_p);
 % n_dim = 10;
 
 y_plot = zeros(length(n_dim), length(p_deg));
 y_var = zeros(length(n_dim), length(p_deg));
 
-num_samples = 30;
+num_samples = 5;
 
 figure(1)
 hold on
@@ -33,7 +32,7 @@ for i1 = 1:length(n_dim)
 end
 
 plot(p_deg, (y_plot), '^ -', 'LineWidth', 2, 'MarkerSize', 8)
-plot(p_deg, (y_var), 'v -', 'LineWidth', 2, 'MarkerSize', 8)
+% plot(p_deg, (y_var), 'v -', 'LineWidth', 2, 'MarkerSize', 8)
 plot([0, 5], [exp(1), exp(1)], '-- k' )
 
 
