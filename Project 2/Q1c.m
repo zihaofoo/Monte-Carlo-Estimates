@@ -14,7 +14,7 @@ rightbc = 1.0;          % u_r = 1
 
 mu = 1.0;
 x_pos = 0.5;
-num_MC = 10000;    % M
+num_MC = 100000;    % M
 
 %% Generate untruncated K's
 cov_x_mat = zeros(num_x, num_x);

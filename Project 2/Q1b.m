@@ -12,10 +12,10 @@ source = 5.0;           % s(x) = 5
 rightbc = 1.0;          % u_r = 1
 
 %% Monte Carlo simulation
-num_MC = 100;
+num_MC = 50;
 
 n_dim = 5;
-p_deg = 2;
+p_deg = 3;
 mu = 1.0;
 num_sample = 1;
 
@@ -47,7 +47,7 @@ R = mvnrnd(mu * ones(num_x, 1), cov_x_mat, num_MC)';
 k_untruncated = exp(R);
 
 %% ODE Solver
-x_loc = 0.75;
+x_loc = 0.5;
 
 u_val_PCE = zeros(num_MC, 1);
 u_val_KL = zeros(num_MC, 1);
@@ -135,53 +135,47 @@ xlabel('X coordinate, x')
 ylabel('Mean field solution, u(x)')
 axis('square')
 legend('Untruncated', 'KL Expansion', 'PCE')
-title('n = 5, p = 2')
+title('n = 5, p = 3')
 
 %% Covariance Field 
-u_mean_KL = mean(usol_KL, 2);
-cov_KL = zeros(num_x, num_x); 
 
-for i1 = 1:num_x
-    for i2 = 1:num_x
-        cov_KL(i1, i2) = mean((usol_KL(:, i1) - u_mean_KL) .* (usol_KL(:, i2) - u_mean_KL));
-    end 
-end
- 
-figure(7)
-title('KL')
-surf(xgrid, xgrid', cov_KL)
-xlabel('x coordinate 1, x_1')
-ylabel('x coordinate 2, x_2')
-zlabel('Covariance of u(x1, x2)')
 
-u_mean_PCE = mean(usol_PCE, 2);
-cov_PCE = zeros(num_x, num_x); 
+u_cov_KL_vec = usol_KL - u_mean_KL;
+u_cov_PCE_vec = usol_PCE - u_mean_PCE;
+u_cov_untruncated_vec = usol_untruncated - u_mean_untruncated;
 
-for i1 = 1:num_x
-    for i2 = 1:num_x
-        cov_PCE(i1, i2) = mean((usol_PCE(:, i1) - u_mean_PCE) .* (usol_PCE(:, i2) - u_mean_PCE));
-    end 
-end
- 
-figure(8)
-title('PCE')
-surf(xgrid, xgrid, cov_KL)
-xlabel('x coordinate 1, x_1')
-ylabel('x coordinate 2, x_2')
-zlabel('Covariance of u(x1, x2)')
+cov_KL_mat = u_cov_KL_vec * u_cov_KL_vec';
+cov_PCE_mat = u_cov_PCE_vec * u_cov_PCE_vec';
+cov_untruncated_mat = u_cov_untruncated_vec * u_cov_untruncated_vec';
 
-u_mean_untruncated = mean(usol_untruncated, 2);
-cov_untruncated = zeros(num_x, num_x); 
+[X1, X2] = meshgrid(xgrid, xgrid);
 
-for i1 = 1:num_x
-    for i2 = 1:num_x
-        cov_untruncated(i1, i2) = mean((usol_untruncated(:, i1) - u_mean_untruncated) .* (usol_untruncated(:, i2) - u_mean_untruncated));
-    end 
-end
- 
-figure(9)
-title('Untruncated')
-surf(xgrid, xgrid, cov_untruncated)
-xlabel('x coordinate 1, x_1')
-ylabel('x coordinate 2, x_2')
-zlabel('Covariance of u(x1, x2)')
+figure(1)
+surf(X1, X2, cov_KL_mat)
+xlim([0,1])
+ylim([0,1])
+xlabel('X Coordinate 1, X_1')
+ylabel('X Coordinate 2, X_2')
+zlabel('Covariance Field, C(X_1, X_2)')
+title('Covariance field of KL')
+axis('square')
+
+figure(2)
+surf(X1, X2, cov_PCE_mat)
+xlim([0,1])
+ylim([0,1])
+xlabel('X Coordinate 1, X_1')
+ylabel('X Coordinate 2, X_2')
+zlabel('Covariance Field, C(X_1, X_2)')
+title('Covariance field of PCE')
+axis('square')
+
+figure(3)
+surf(X1, X2, cov_untruncated_mat)
+xlim([0,1])
+ylim([0,1])
+xlabel('X Coordinate 1, X_1')
+ylabel('X Coordinate 2, X_2')
+zlabel('Covariance Field, C(X_1, X_2)')
+title('Covariance field of untruncated Y')
+axis('square')
