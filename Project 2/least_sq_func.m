@@ -59,7 +59,7 @@ tomil = TotalOrderMultiIndexLattice(n_dim + 1, p_deg);
 tomil.init();
 Mtotalorder = tomil.get_midx_matrix();
 
-num_PCE_terms = size(Mtotalorder, 1);
+num_PCE_terms = size(Mtotalorder, 1)
 z_vec = vertcat(Z_rand_MC, F_MC);
 v_mat = zeros(num_MC, num_PCE_terms);
 

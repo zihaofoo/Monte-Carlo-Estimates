@@ -12,9 +12,9 @@ source = 5.0;           % s(x) = 5
 rightbc = 1.0;          % u_r = 1
 
 %% Monte Carlo simulation for P-deg
-num_MC = 50;
+num_MC = 250;
 n_dim = 4;
-p_deg = linspace(1, 3, 3);
+p_deg = linspace(1, 5, 5);
 error_vec = zeros(length(p_deg), 1);
 
 for i1 = 1:length(error_vec)
@@ -22,13 +22,13 @@ for i1 = 1:length(error_vec)
 end
 
 figure(1)
-plot(p_deg, error_vec)
+plot(p_deg, error_vec/ num_MC)
 xlabel('Polynomial degree, p')
 ylabel('L2 error of ||Vc - f||')
 axis('square')
 
 %% Monte Carlo simulation for num_MC
-num_MC = 70:10:100;
+num_MC = 70:50:270;
 n_dim = 4;
 p_deg = 3;
 mu = 1.0;

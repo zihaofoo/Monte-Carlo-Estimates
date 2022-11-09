@@ -2,7 +2,7 @@
 clear all
 clc
 
-num_MC = 100;
+num_MC = 200;
 n_dim = 4; 
 p_deg = 2;
 
@@ -15,7 +15,9 @@ figure(1)
 hold on
 box on
 histogram(u_vec, 30)
-title('First')
+title('x = 0')
+axis('square')
+
 mu_PCE = mean(u_vec);
 var_PCE = var(u_vec);
 
@@ -28,7 +30,8 @@ figure(2)
 hold on
 box on
 histogram(u_vec, 30)
-title('Second')
+title('x = 0.5')
+axis('square')
 mu_PCE = mean(u_vec);
 var_PCE = var(u_vec);
 
@@ -41,6 +44,34 @@ figure(3)
 hold on
 box on
 histogram(u_vec, 30)
-title('Third')
+title('x = 0.75')
+axis('square')
+
 mu_PCE = mean(u_vec);
 var_PCE = var(u_vec);
+
+%% Mean Field
+num_MC = 200;
+n_dim = 4; 
+p_deg = 2;
+num_x = 5;
+x_vec = linspace(0, 1, num_x); 
+u_mean_vec = zeros(num_x, 1);
+usol_LS = zeros(num_x, num_MC);
+
+for i1 = 1:length(x_vec)
+    u_vec = solver_least_sq(n_dim, p_deg, num_MC, x_loc);
+    u_mean_vec(i1) = mean(u_vec); 
+    usol_LS(i1, :) = u_vec;
+    i1
+end
+
+figure(4)
+hold on
+box on
+plot(x_vec , u_mean_vec , 'r', 'LineWidth', 1.5)
+xlabel('X coordinate, x')
+ylabel('Mean field solution, u(x)')
+axis('square')
+legend('Least Square')
+title('Mean field of least square approximation')
