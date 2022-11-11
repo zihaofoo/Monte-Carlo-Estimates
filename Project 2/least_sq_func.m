@@ -5,11 +5,11 @@ p_deg = 3;
 num_MC = 100;
 %}
 
-function [error_vec, c_vec] = least_sq_func(n_dim, p_deg, num_MC, x_loc)
+function [error_vec, c_vec] = least_sq_func(n_dim, p_deg, num_MC, x_loc, num_x)
 %% Variable definition for ODE solver
 start_x = 0.0;
 end_x = 1.0;
-num_x = 21;           
+% num_x = 21;           
 
 mu_F = -1.0;
 sigma_F = sqrt(0.2);

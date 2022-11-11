@@ -1,12 +1,12 @@
 
-function [output] = solver_least_sq(n_dim, p_deg, num_MC, x_loc)
+function [output] = solver_least_sq(n_dim, p_deg, num_MC, x_loc, num_x)
     
-    [error_vec, c_vec] = least_sq_func(n_dim, p_deg, num_MC, x_loc);
+    [error_vec, c_vec] = least_sq_func(n_dim, p_deg, num_MC, x_loc, num_x);
                 
     Z_rand_MC = zeros(n_dim, num_MC); 
     F_MC = zeros(1, num_MC); 
     
-    num_x = 21;
+    % num_x = 21;
     mu_F = -1.0;
     sigma_F = sqrt(0.2);
 

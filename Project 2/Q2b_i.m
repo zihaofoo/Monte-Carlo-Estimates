@@ -53,14 +53,14 @@ var_PCE = var(u_vec);
 %% Mean Field
 num_MC = 200;
 n_dim = 4; 
-p_deg = 2;
-num_x = 5;
+p_deg = 3;
+num_x = 50;
 x_vec = linspace(0, 1, num_x); 
 u_mean_vec = zeros(num_x, 1);
 usol_LS = zeros(num_x, num_MC);
 
 for i1 = 1:length(x_vec)
-    u_vec = solver_least_sq(n_dim, p_deg, num_MC, x_loc);
+    u_vec = solver_least_sq(n_dim, p_deg, num_MC, x_vec(i1), num_x);
     u_mean_vec(i1) = mean(u_vec); 
     usol_LS(i1, :) = u_vec;
     i1
