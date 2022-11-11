@@ -12,10 +12,10 @@ source = 5.0;           % s(x) = 5
 rightbc = 1.0;          % u_r = 1
 
 %% Monte Carlo simulation
-num_MC = 50;
+num_MC = 15;
 
 n_dim = 5;
-p_deg = 3;
+p_deg = 2;
 mu = 1.0;
 num_sample = 1;
 
@@ -30,6 +30,7 @@ for i1 = 1:num_x
     for i2 = 1:num_MC
         [Y_vec(i1, i2), ~] = Y_r_KL_expansion(xgrid(i1), n_dim);
     end
+    i1
 end
 
 k_Y_vec = exp(Y_vec);
@@ -118,6 +119,14 @@ end
 ylabel('u from KL')
 xlabel('x')
 
+figure(7)
+hold on
+box on
+for i1 = 1:10
+    plot(xgrid, usol_untruncated(:, i1), 'LineWidth', 1.5)
+end
+ylabel('u from Untruncated Y')
+xlabel('x')
 
 %% Mean Field
 figure(6)

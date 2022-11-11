@@ -51,7 +51,7 @@ mu_PCE = mean(u_vec);
 var_PCE = var(u_vec);
 
 %% Mean Field
-num_MC = 200;
+num_MC = 75;
 n_dim = 4; 
 p_deg = 3;
 num_x = 50;
@@ -93,4 +93,13 @@ zlabel('Covariance Field, C(X_1, X_2)')
 title('Covariance field of Least Squares')
 axis('square')
 
+%% Realizations
+
+figure (1)
+hold on
+box on
+for i1 = 1:20
+    plot(x_vec, usol_LS(:, i1), '-')
+end
+axis('square')
 
