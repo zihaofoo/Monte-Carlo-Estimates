@@ -75,3 +75,22 @@ ylabel('Mean field solution, u(x)')
 axis('square')
 legend('Least Square')
 title('Mean field of least square approximation')
+
+%% Covariance Field
+u_cov_LS_vec = usol_LS - u_mean_vec;
+
+cov_LS_mat = u_cov_LS_vec * u_cov_LS_vec';
+
+[X1, X2] = meshgrid(x_vec, x_vec);
+
+figure(5)
+surf(X1, X2, cov_LS_mat)
+xlim([0,1])
+ylim([0,1])
+xlabel('X Coordinate 1, X_1')
+ylabel('X Coordinate 2, X_2')
+zlabel('Covariance Field, C(X_1, X_2)')
+title('Covariance field of Least Squares')
+axis('square')
+
+
