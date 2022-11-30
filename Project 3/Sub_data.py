@@ -109,25 +109,28 @@ def PDF_posterior(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc):
 
     k_n = np.exp(Y_n(x = xobserved, Z = l_vec, n = d, muY = 1))
     u_vec = diffusioneqn(xgrid = xobserved, F = -1, k = k_n, source = s_vec, rightbc = right_bc)
-    # prior = multivariate_normal.pdf(l_vec, mean = np.zeros(d), cov = np.eye(d), allow_singular = False)
-    # likelihood = multivariate_normal.pdf(Uobserved, mean = u_vec, cov = sigma_epsilon**2 * np.eye(N), allow_singular = False)
+    log_prior = multivariate_normal.logpdf(l_vec, mean = np.zeros(d), cov = np.eye(d), allow_singular = False)
+    log_likelihood = multivariate_normal.logpdf(Uobserved, mean = u_vec, cov = sigma_epsilon**2 * np.eye(N), allow_singular = False)
     
-    log_prior = - (np.dot(l_vec, l_vec))  / 2
-    log_likelihood = - ((Uobserved - u_vec).T @ la.inv(sigma_epsilon**2 * np.eye(N)) @ (Uobserved - u_vec)) / 2
+    log_prior1 = - (np.dot(l_vec, l_vec))  / 2
+    log_likelihood1 = - ((Uobserved - u_vec).T @ la.inv(sigma_epsilon**2 * np.eye(N)) @ (Uobserved - u_vec)) / 2
 
-    print(log_prior, log_likelihood)
+    print(log_prior, log_prior1)
+    print(log_likelihood, log_likelihood1)
+
+    # print(log_prior, log_likelihood)
     # print(np.log(prior),  np.log(likelihood))
     # return pi_prior * pi_likelihood
     return log_prior + log_likelihood
 
-def PDF_proposal(l_vec, z_mat, epsil = 0.1):
+def PDF_proposal(l_vec, z_last, z_mat, epsil = 0.1):
     
     (t, d) = np.shape(z_mat)  # d = Number of stochastic dimensions, t = number of MC steps.
-    z_last = z_mat[-1, :]       # z_{t-1} vector
+    # z_last = z_mat[-1, :]       # z_{t-1} vector
     s_d = 2.4**2 / d
     Cov_mat = (s_d * np.cov(z_mat, rowvar = False)) + (s_d * epsil * np.eye(d))
-    log_l = np.log(multivariate_normal.pdf(l_vec, mean = z_last, cov = Cov_mat, allow_singular = False))
-    log_z = np.log(multivariate_normal.pdf(z_last, mean = l_vec, cov = Cov_mat, allow_singular = False))
+    log_l = multivariate_normal.logpdf(l_vec, mean = z_last, cov = Cov_mat, allow_singular = False)
+    log_z = multivariate_normal.logpdf(z_last, mean = l_vec, cov = Cov_mat, allow_singular = False)
 
     return log_z - log_l 
 
@@ -136,10 +139,11 @@ def adaptive_MC(num_MCMC, num_deg, xobserved, Uobserved, sigma_epsilon, right_bc
     # Initialization
     cov_Z_init = np.eye(num_deg, dtype = float)                 # Covariance of Z (initial)
     mu_Z_init = np.zeros((num_deg), dtype = float)              # Mean of Z (initial)
-    z_mat = np.zeros((num_MCMC, num_deg), dtype=float)
+    z_mat = np.zeros((num_MCMC + 1, num_deg), dtype = float)
     z_mat[0, :] = multivariate_normal.rvs(mean = mu_Z_init, cov = cov_Z_init)
-    epsil = 0.1
+    epsil = 5
     test_vec = uniform(low = 0, high = 1, size = num_MCMC)
+    Accept = 0
 
     # Drawing from the proposal
     for i1 in range(num_MCMC):
@@ -148,18 +152,19 @@ def adaptive_MC(num_MCMC, num_deg, xobserved, Uobserved, sigma_epsilon, right_bc
         s_d = 2.4**2 / d
         Cov_mat = (s_d * np.cov(z_mat[0:i1+1, :], rowvar = False)) + (s_d * epsil * np.eye(d))
 
-        l_vec = multivariate_normal.rvs(mean = z_mat[i1, :], cov = Cov_mat, allow_singular = False)
+        l_vec = multivariate_normal.rvs(mean = z_mat[i1, :], cov = Cov_mat)
         pi_log_l = PDF_posterior(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc)
         pi_log_z = PDF_posterior(z_mat[i1, :], xobserved, Uobserved, sigma_epsilon, right_bc)
-        q_log_l_z = PDF_proposal(l_vec, z_mat, epsil)
+        q_log_l_z = PDF_proposal(l_vec, z_mat[i1, :], z_mat, epsil)
         posterior_ratio = np.exp(pi_log_l - pi_log_z + q_log_l_z)
-        accept_prob = np.min(1, posterior_ratio)
-
+        accept_prob = np.minimum(1.0, posterior_ratio, dtype = float)
+        
         if test_vec[i1] <= accept_prob:
-            z_next = l_vec
+            z_mat[i1+1, :] = l_vec
+            Accept += 1
         else:
-            z_next = z_mat[i1, :]
+            z_mat[i1+1, :] = z_mat[i1, :]
+    
+    print(Accept)
 
-        z_mat[i1, :] = z_next
-
-    return 
+    return z_mat
