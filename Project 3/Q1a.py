@@ -33,6 +33,6 @@ u_vec = Sub.diffusioneqn(xgrid = xobserved, F = F_vec, k = k_n, source = s_vec, 
 z_vec =  multivariate_normal.rvs(mean = mu_Z_init, cov = cov_Z_init) 
 l_vec = multivariate_normal.rvs(mean = mu_Z_init, cov = cov_Z_init) 
 
-z_vec = np.ones(150) 
+z_vec = np.ones(10) * 7
 posterior = Sub.PDF_posterior(z_vec, xobserved, Uobserved, sigma_ep, rightbc_vec)
 print(posterior)

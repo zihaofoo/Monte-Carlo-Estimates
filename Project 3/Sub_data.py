@@ -108,14 +108,14 @@ def PDF_posterior(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc):
 
     k_n = np.exp(Y_n(x = xobserved, Z = l_vec, n = d, muY = 1))
     u_vec = diffusioneqn(xgrid = xobserved, F = -1, k = k_n, source = s_vec, rightbc = right_bc)
-    prior = multivariate_normal.pdf(l_vec, mean = np.zeros(d), cov = np.eye(d), allow_singular = False)
-    likelihood = multivariate_normal.pdf(Uobserved, mean = u_vec, cov = sigma_epsilon**2 * np.eye(N), allow_singular = False)
+    # prior = multivariate_normal.pdf(l_vec, mean = np.zeros(d), cov = np.eye(d), allow_singular = False)
+    # likelihood = multivariate_normal.pdf(Uobserved, mean = u_vec, cov = sigma_epsilon**2 * np.eye(N), allow_singular = False)
     
-    log_prior = - ((l_vec - np.zeros(d)).T @ (l_vec - np.zeros(d))) / 2
+    log_prior = - (np.dot(l_vec, l_vec))  / 2
     log_likelihood = - ((Uobserved - u_vec).T @ la.inv(sigma_epsilon**2 * np.eye(N)) @ (Uobserved - u_vec)) / 2
 
     print(log_prior, log_likelihood)
-    print(np.log(prior),  np.log(likelihood))
+    # print(np.log(prior),  np.log(likelihood))
     # return pi_prior * pi_likelihood
     return log_prior + log_likelihood
 
