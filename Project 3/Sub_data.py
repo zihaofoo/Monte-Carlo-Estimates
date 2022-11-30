@@ -15,6 +15,8 @@ def load_data():
     xgrid = [float(mat1['xgrid'][i]) for i in range(len(mat1['xgrid']))]
     xobserved = [float(mat2['xobserved'][i]) for i in range(len(mat2['xobserved']))]
     Uobserved = [float(mat2['Uobserved'][i]) for i in range(len(mat2['Uobserved']))]
+    xobserved = np.append(xobserved, 1)
+    Uobserved = np.append(Uobserved, 1)
 
     return ktrue, xgrid, xobserved, Uobserved
 
@@ -100,8 +102,8 @@ def source(x_vec, m_vec = np.array([0.2, 0.4, 0.6, 0.8], dtype=float), theta = 0
 
 def PDF_posterior(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc):
     
-    (d, ) = np.shape(l_vec)  # d = Number of stochastic dimensions, n = number of MC steps.
-    N = len(xobserved)  # N = number of x coordinate points
+    (d, ) = np.shape(l_vec)             # d = Number of stochastic dimensions, n = number of MC steps.
+    N = len(xobserved)                  # N = number of x coordinate points
     s_vec = source(x_vec = xobserved)
 
     k_n = np.exp(Y_n(x = xobserved, Z = l_vec, n = d, muY = 1))
@@ -109,15 +111,20 @@ def PDF_posterior(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc):
     prior = multivariate_normal.pdf(l_vec, mean = np.zeros(d), cov = np.eye(d), allow_singular = False)
     likelihood = multivariate_normal.pdf(Uobserved, mean = u_vec, cov = sigma_epsilon**2 * np.eye(N), allow_singular = False)
     
+    log_prior = - ((l_vec - np.zeros(d)).T @ (l_vec - np.zeros(d))) / 2
+    log_likelihood = - ((Uobserved - u_vec).T @ la.inv(sigma_epsilon**2 * np.eye(N)) @ (Uobserved - u_vec)) / 2
+
+    print(log_prior, log_likelihood)
+    print(np.log(prior),  np.log(likelihood))
     # return pi_prior * pi_likelihood
-    return (np.log(prior) + np.log(likelihood))
+    return log_prior + log_likelihood
 
 def PDF_proposal(l_vec, z_mat, epsil = 0.1):
     
     (d, t) = np.shape(z_mat)  # d = Number of stochastic dimensions, t = number of MC steps.
     z_last = z_mat[:, -1]       # z_{t-1} vector
     s_d = 2.4**2 / d
-    Cov_mat = s_d * np.cov(z_mat) + s_d * epsil * np.eye(d)
-    posterior = multivariate_normal.pdf(l_vec, mean = z_last, cov = Cov_mat, allow_singular = False)
+    Cov_mat = (s_d * np.cov(z_mat)) + (s_d * epsil * np.eye(d))
+    proposal = multivariate_normal.pdf(l_vec, mean = z_last, cov = Cov_mat, allow_singular = False)
 
-    return np.log(posterior)
+    return np.log(proposal)

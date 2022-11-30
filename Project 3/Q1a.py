@@ -7,7 +7,7 @@ from scipy.stats import multivariate_normal
 ## Variable Definition
 ktrue, xgrid, xobserved, Uobserved = Sub.load_data()
 
-num_deg = 10                # Value of d
+num_deg = 100                # Value of d
 num_MCMC = 1000             # Number of MC steps
 sigma_ep = np.sqrt(10**(-4))
 F_vec = -1.0
@@ -33,8 +33,6 @@ u_vec = Sub.diffusioneqn(xgrid = xobserved, F = F_vec, k = k_n, source = s_vec, 
 z_vec =  multivariate_normal.rvs(mean = mu_Z_init, cov = cov_Z_init) 
 l_vec = multivariate_normal.rvs(mean = mu_Z_init, cov = cov_Z_init) 
 
-posterior_n = Sub.PDF_posterior(z_vec, xobserved, Uobserved, sigma_ep, rightbc_vec)
-
-posterior_d = Sub.PDF_posterior(l_vec, xobserved, Uobserved, sigma_ep, rightbc_vec)
-
-
+z_vec = np.ones(150) 
+posterior = Sub.PDF_posterior(z_vec, xobserved, Uobserved, sigma_ep, rightbc_vec)
+print(posterior)
