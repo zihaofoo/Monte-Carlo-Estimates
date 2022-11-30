@@ -4,6 +4,7 @@ from numpy.polynomial.legendre import leggauss
 import numpy.linalg as la
 from scipy.linalg import sqrtm
 from scipy.stats import multivariate_normal
+from numpy.random import uniform
 import pdb
 
 
@@ -121,10 +122,44 @@ def PDF_posterior(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc):
 
 def PDF_proposal(l_vec, z_mat, epsil = 0.1):
     
-    (d, t) = np.shape(z_mat)  # d = Number of stochastic dimensions, t = number of MC steps.
-    z_last = z_mat[:, -1]       # z_{t-1} vector
+    (t, d) = np.shape(z_mat)  # d = Number of stochastic dimensions, t = number of MC steps.
+    z_last = z_mat[-1, :]       # z_{t-1} vector
     s_d = 2.4**2 / d
-    Cov_mat = (s_d * np.cov(z_mat)) + (s_d * epsil * np.eye(d))
-    proposal = multivariate_normal.pdf(l_vec, mean = z_last, cov = Cov_mat, allow_singular = False)
+    Cov_mat = (s_d * np.cov(z_mat, rowvar = False)) + (s_d * epsil * np.eye(d))
+    log_l = np.log(multivariate_normal.pdf(l_vec, mean = z_last, cov = Cov_mat, allow_singular = False))
+    log_z = np.log(multivariate_normal.pdf(z_last, mean = l_vec, cov = Cov_mat, allow_singular = False))
 
-    return np.log(proposal)
+    return log_z - log_l 
+
+def adaptive_MC(num_MCMC, num_deg, xobserved, Uobserved, sigma_epsilon, right_bc):
+
+    # Initialization
+    cov_Z_init = np.eye(num_deg, dtype = float)                 # Covariance of Z (initial)
+    mu_Z_init = np.zeros((num_deg), dtype = float)              # Mean of Z (initial)
+    z_mat = np.zeros((num_MCMC, num_deg), dtype=float)
+    z_mat[0, :] = multivariate_normal.rvs(mean = mu_Z_init, cov = cov_Z_init)
+    epsil = 0.1
+    test_vec = uniform(low = 0, high = 1, size = num_MCMC)
+
+    # Drawing from the proposal
+    for i1 in range(num_MCMC):
+
+        (t, d) = np.shape(z_mat)  # d = Number of stochastic dimensions, t = number of MC steps.
+        s_d = 2.4**2 / d
+        Cov_mat = (s_d * np.cov(z_mat[0:i1+1, :], rowvar = False)) + (s_d * epsil * np.eye(d))
+
+        l_vec = multivariate_normal.rvs(mean = z_mat[i1, :], cov = Cov_mat, allow_singular = False)
+        pi_log_l = PDF_posterior(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc)
+        pi_log_z = PDF_posterior(z_mat[i1, :], xobserved, Uobserved, sigma_epsilon, right_bc)
+        q_log_l_z = PDF_proposal(l_vec, z_mat, epsil)
+        posterior_ratio = np.exp(pi_log_l - pi_log_z + q_log_l_z)
+        accept_prob = np.min(1, posterior_ratio)
+
+        if test_vec[i1] <= accept_prob:
+            z_next = l_vec
+        else:
+            z_next = z_mat[i1, :]
+
+        z_mat[i1, :] = z_next
+
+    return 
