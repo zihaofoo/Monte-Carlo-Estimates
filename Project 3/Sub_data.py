@@ -7,7 +7,6 @@ from scipy.stats import multivariate_normal, gamma
 from numpy.random import uniform
 import pdb
 
-
 def load_data():
 
     mat1 = scipy.io.loadmat('ktrue.mat')
@@ -112,7 +111,23 @@ def PDF_posterior(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc):
     
     log_prior = - (np.dot(l_vec, l_vec))  / 2
     log_likelihood = - ((Uobserved - u_vec).T @ la.inv(sigma_epsilon**2 * np.eye(N)) @ (Uobserved - u_vec)) / 2
+    # print(log_prior, log_prior1)
+    # print(log_likelihood, log_likelihood1)
 
+    return log_prior + log_likelihood
+
+def PDF_posterior_mod(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc, index):
+    (d, ) = np.shape(l_vec)             # d = Number of stochastic dimensions, n = number of MC steps.
+    N = len(xobserved)                  # N = number of x coordinate points
+    s_vec = source(x_vec = xobserved)
+
+    k_n = np.exp(Y_n(x = xobserved, Z = l_vec, n = d, muY = 1))
+    u_vec = diffusioneqn(xgrid = xobserved, F = -1, k = k_n, source = s_vec, rightbc = right_bc)
+    # log_prior = multivariate_normal.logpdf(l_vec, mean = np.zeros(d), cov = np.identity(d), allow_singular = False)
+    # log_likelihood = multivariate_normal.logpdf(Uobserved, mean = u_vec, cov = sigma_epsilon**2 * np.identity(N), allow_singular = False)
+    
+    log_prior = - (np.dot(l_vec, l_vec))  / 2
+    log_likelihood = - ((Uobserved - u_vec[index]).T @ la.inv(sigma_epsilon**2 * np.eye(N)) @ (Uobserved - u_vec[index])) / 2
     # print(log_prior, log_prior1)
     # print(log_likelihood, log_likelihood1)
 
@@ -159,17 +174,23 @@ def adaptive_MC(num_MCMC, num_deg, xobserved, Uobserved, sigma_epsilon, right_bc
     return z_mat[num_MCMC-500:num_MCMC+1, :], z_mat
 
 
-def adaptive_MC_epsilon(num_MCMC, num_deg, xobserved, Uobserved, right_bc, epsil = 0.01):
+def adaptive_MC_epsilon(num_MCMC, num_deg, xobserved, Uobserved, right_bc, epsil = 0.01, gamma_1 = 1E4, gamma_2 = 1):
     # Initialization
+
+    N = len(xobserved)
     cov_Z_init = np.eye(num_deg, dtype = float)                 # Covariance of Z (initial)
     mu_Z_init = np.zeros((num_deg), dtype = float)              # Mean of Z (initial)
     z_mat = np.zeros((num_MCMC + 1, num_deg), dtype = float)
     z_mat[0, :] = multivariate_normal.rvs(mean = mu_Z_init, cov = cov_Z_init)
+    inv_sigma_sq_init = gamma.rvs(a = gamma_1, size = 1, scale = 1/gamma_2)      # Initialization of sigma_^2
+    sigma_sq = np.zeros((num_MCMC + 1), dtype = float)
+    sigma_sq[0] = 1 / inv_sigma_sq_init
     test_vec = uniform(low = 0, high = 1, size = num_MCMC)
     Accept = 0
 
     # Drawing from the proposal
     for i1 in range(num_MCMC):
+        sigma_epsilon = np.sqrt(sigma_sq[i1])
         (t, d) = np.shape(z_mat)  # d = Number of stochastic dimensions, t = number of MC steps.
         s_d = 2.4**2 / d
         Cov_mat = (s_d * np.cov(z_mat[0:i1+1, :], rowvar = False)) + (s_d * epsil * np.eye(d))
@@ -187,5 +208,59 @@ def adaptive_MC_epsilon(num_MCMC, num_deg, xobserved, Uobserved, right_bc, epsil
         else:
             z_mat[i1+1, :] = z_mat[i1, :]
     
+        # Updating sigma_sq
+        s_vec = source(x_vec = xobserved)
+        k_n = np.exp(Y_n(x = xobserved, Z = z_mat[i1+1, :], n = d, muY = 1))
+        u_vec = diffusioneqn(xgrid = xobserved, F = -1, k = k_n, source = s_vec, rightbc = right_bc)
+
+        gamma_alpha = gamma_1 + (N / 2)
+        gamma_beta = gamma_2 + (np.dot((Uobserved - u_vec), (Uobserved - u_vec)) / 2)
+        inv_sigma_sq = gamma.rvs(a = gamma_alpha, size = 1, scale = 1/gamma_beta)      
+        
+        sigma_sq[i1 + 1] = 1 / inv_sigma_sq
+
     print("Acceptance probability:", Accept / num_MCMC)
-    return z_mat[num_MCMC-500:num_MCMC+1, :], z_mat
+
+    # return z_mat, sigma_sq
+    return z_mat[num_MCMC-500:num_MCMC+1, :], z_mat, sigma_sq
+
+
+def variance_min(num_MCMC, num_deg, xobserved, Uobserved, sigma_epsilon, right_bc, epsil = 0.01):
+    # Initialization
+    mean_var = np.zeros(len(xobserved) - 1)
+    for k1 in range(len(xobserved) - 1):
+
+        cov_Z_init = np.eye(num_deg, dtype = float)                 # Covariance of Z (initial)
+        mu_Z_init = np.zeros((num_deg), dtype = float)              # Mean of Z (initial)
+        z_mat = np.zeros((num_MCMC + 1, num_deg), dtype = float)
+        z_mat[0, :] = multivariate_normal.rvs(mean = mu_Z_init, cov = cov_Z_init)
+        test_vec = uniform(low = 0, high = 1, size = num_MCMC)
+        Accept = 0
+        burn_in = int(num_MCMC / 2)
+        k_mat = np.zeros((num_MCMC, len(xobserved)))
+
+        # Drawing from the proposal
+        for i1 in range(num_MCMC):
+            (t, d) = np.shape(z_mat)  # d = Number of stochastic dimensions, t = number of MC steps.
+            s_d = 2.4**2 / d
+            Cov_mat = (s_d * np.cov(z_mat[0:i1+1, :], rowvar = False)) + (s_d * epsil * np.eye(d))
+            l_vec = multivariate_normal.rvs(mean = z_mat[i1, :], cov = Cov_mat)
+
+            pi_log_l = PDF_posterior(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc, index = k1)
+            pi_log_z = PDF_posterior(z_mat[i1, :], xobserved, Uobserved, sigma_epsilon, right_bc, index = k1)
+            q_log_l_z = PDF_proposal(l_vec, z_mat[i1, :], z_mat, epsil)
+            posterior_ratio = np.exp(pi_log_l - pi_log_z + q_log_l_z)
+            accept_prob = np.minimum(1.0, posterior_ratio, dtype = float)
+
+            if test_vec[i1] <= accept_prob:
+                z_mat[i1+1, :] = l_vec
+                Accept += 1
+            else:
+                z_mat[i1+1, :] = z_mat[i1, :]
+
+            k_mat[i1,:] = np.exp(Y_n(xobserved, z_mat[i1, :], n = num_deg))
+
+        k_mat[burn_in:, :]
+
+        # print("Acceptance probability:", Accept / num_MCMC)
+    return mean_var
