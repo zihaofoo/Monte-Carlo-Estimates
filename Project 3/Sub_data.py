@@ -116,7 +116,8 @@ def PDF_posterior(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc):
 
     return log_prior + log_likelihood
 
-def PDF_posterior_mod(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc, index):
+
+def PDF_posterior_infer(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc, label):
     (d, ) = np.shape(l_vec)             # d = Number of stochastic dimensions, n = number of MC steps.
     N = len(xobserved)                  # N = number of x coordinate points
     s_vec = source(x_vec = xobserved)
@@ -127,7 +128,7 @@ def PDF_posterior_mod(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc, inde
     # log_likelihood = multivariate_normal.logpdf(Uobserved, mean = u_vec, cov = sigma_epsilon**2 * np.identity(N), allow_singular = False)
     
     log_prior = - (np.dot(l_vec, l_vec))  / 2
-    log_likelihood = - ((Uobserved - u_vec[index]).T @ la.inv(sigma_epsilon**2 * np.eye(N)) @ (Uobserved - u_vec[index])) / 2
+    log_likelihood = - ((Uobserved[label: label+1] - u_vec[label: label+1]))**2 / (2 * sigma_epsilon**2)
     # print(log_prior, log_prior1)
     # print(log_likelihood, log_likelihood1)
 
@@ -228,8 +229,8 @@ def adaptive_MC_epsilon(num_MCMC, num_deg, xobserved, Uobserved, right_bc, epsil
 def variance_min(num_MCMC, num_deg, xobserved, Uobserved, sigma_epsilon, right_bc, epsil = 0.01):
     # Initialization
     mean_var = np.zeros(len(xobserved) - 1)
-    for k1 in range(len(xobserved) - 1):
 
+    for k1 in range(len(xobserved) - 1):
         cov_Z_init = np.eye(num_deg, dtype = float)                 # Covariance of Z (initial)
         mu_Z_init = np.zeros((num_deg), dtype = float)              # Mean of Z (initial)
         z_mat = np.zeros((num_MCMC + 1, num_deg), dtype = float)
@@ -246,8 +247,8 @@ def variance_min(num_MCMC, num_deg, xobserved, Uobserved, sigma_epsilon, right_b
             Cov_mat = (s_d * np.cov(z_mat[0:i1+1, :], rowvar = False)) + (s_d * epsil * np.eye(d))
             l_vec = multivariate_normal.rvs(mean = z_mat[i1, :], cov = Cov_mat)
 
-            pi_log_l = PDF_posterior(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc, index = k1)
-            pi_log_z = PDF_posterior(z_mat[i1, :], xobserved, Uobserved, sigma_epsilon, right_bc, index = k1)
+            pi_log_l = PDF_posterior_infer(l_vec, xobserved, Uobserved, sigma_epsilon, right_bc, k1)
+            pi_log_z = PDF_posterior_infer(z_mat[i1, :], xobserved, Uobserved, sigma_epsilon, right_bc, k1)
             q_log_l_z = PDF_proposal(l_vec, z_mat[i1, :], z_mat, epsil)
             posterior_ratio = np.exp(pi_log_l - pi_log_z + q_log_l_z)
             accept_prob = np.minimum(1.0, posterior_ratio, dtype = float)
@@ -260,7 +261,6 @@ def variance_min(num_MCMC, num_deg, xobserved, Uobserved, sigma_epsilon, right_b
 
             k_mat[i1,:] = np.exp(Y_n(xobserved, z_mat[i1, :], n = num_deg))
 
-        k_mat[burn_in:, :]
-
-        # print("Acceptance probability:", Accept / num_MCMC)
+        mean_var[k1] = np.mean(np.var(k_mat[burn_in:, :-1], axis = 0))
+        print("Acceptance probability:", Accept / num_MCMC)
     return mean_var
