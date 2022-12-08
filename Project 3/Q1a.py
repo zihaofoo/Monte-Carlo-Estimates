@@ -78,6 +78,7 @@ ax.legend(frameon = False)
 ax.set_ylabel('log Permeability, ln k(x)')
 ax.set_xlabel('X coordinate, x') 
 ax.set_xbound(lower = xobserved[0], upper = xobserved[-1])
+plt.savefig('Q1a-1.pdf')
 
 n_vec = np.arange(0, 501, 1)
 fig1, ax1 = plt.subplots(figsize = (5,5))
@@ -91,6 +92,8 @@ ax1.set_xbound(lower = n_vec[0], upper = n_vec[-1])
 ax1.legend(ncol = 5, frameon = False, loc = 'upper right')
 # ax1.set_ylabel('Permeability, k(x)')
 # ax1.set_xlabel('X coordinate, x') 
+plt.savefig('Q1a-2.pdf')
+
 
 fig2, ax2 = plt.subplots(figsize = (5,5))
 for j1 in range(len(R_h)):
@@ -98,19 +101,28 @@ for j1 in range(len(R_h)):
 ax2.set_ylabel('Autocorrelation, R_h')
 ax2.legend()
 ax2.set_xlabel('Lag') 
+plt.savefig('Q1a-3.pdf')
+
 
 dFrame = pd.DataFrame(z_mat)
 scatter_matrix(dFrame, figsize = (5,5))
+
+plt.savefig('Q1a-4.pdf')
 
 fig3, ax3 = plt.subplots(figsize = (5,5))
 Contour_plot = ax3.contourf(x_grid_vec, y_grid_vec, Cov_mat)
 cbar = fig3.colorbar(Contour_plot)
 cbar.ax.set_ylabel('Covariance field of posterior')
 
+plt.savefig('Q1a-5.pdf')
+
+
 fig4, ax4 = plt.subplots(figsize = (5,5))
 Contour_plot2 = ax4.contourf(x_grid_vec, y_grid_vec, Cov_init_mat)
 cbar = fig4.colorbar(Contour_plot2)
 cbar.ax.set_ylabel('Covariance field of prior')
+
+plt.savefig('Q1a-6.pdf')
 
 plt.tight_layout()
 plt.show()

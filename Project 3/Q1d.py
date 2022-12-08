@@ -10,8 +10,8 @@ from pandas.plotting import scatter_matrix
 ## Variable Definition
 ktrue, xgrid, xobserved, Uobserved = Sub.load_data()
 
-num_deg = 25                    # Value of d
-num_MCMC = 5000                 # Number of MC steps
+num_deg = 5                    # Value of d
+num_MCMC = 200                 # Number of MC steps
 sigma_ep = np.sqrt(10**(-4))
 F_vec = -1.0
 s_vec = Sub.source(x_vec = xobserved)
@@ -22,4 +22,9 @@ burn_in = int(num_MCMC / 2)
 ## Adaptive Monte Carlo
 mean_var = Sub.variance_min(num_MCMC, num_deg, xobserved, Uobserved, sigma_epsilon = sigma_ep, right_bc = rightbc_vec, epsil = 0.05)
 
+fig, ax = plt.subplots(figsize = (5,5))
+ax.plot(xobserved[:-1], mean_var, color = 'maroon', marker = 'v', markersize = 8)
+ax.set_xlabel('X coordinate')
+ax.set_ylabel('Spatially averaged posterior variance of k(x)')
+plt.show()
 print(mean_var)

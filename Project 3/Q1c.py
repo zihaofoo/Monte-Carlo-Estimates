@@ -59,6 +59,8 @@ ax_b.set_xlabel('u(x=0)')
 ax_a.set_title('Deterministic sigma')
 ax_b.set_title('Variable sigma')
 
+plt.savefig('Q1c.pdf')
+
 plt.tight_layout()
 plt.show()
 # 

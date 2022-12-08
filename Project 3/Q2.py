@@ -82,19 +82,25 @@ ax.legend(frameon = False)
 ax.set_ylabel('log Permeability, ln k(x)')
 ax.set_xlabel('X coordinate, x') 
 ax.set_xbound(lower = xobserved[0], upper = xobserved[-1])
+plt.savefig('Q2-1.pdf')
 
 dFrame = pd.DataFrame(z_new_mat)
 scatter_matrix(dFrame, figsize = (5,5))
+plt.savefig('Q2-2.pdf')
 
 fig3, ax3 = plt.subplots(figsize = (5,5))
 Contour_plot = ax3.contourf(x_grid_vec, y_grid_vec, Cov_mat)
 cbar = fig3.colorbar(Contour_plot)
 cbar.ax.set_ylabel('Covariance field of posterior')
+plt.savefig('Q2-3.pdf')
+
 
 fig4, ax4 = plt.subplots(figsize = (5,5))
 Contour_plot2 = ax4.contourf(x_grid_vec, y_grid_vec, Cov_init_mat)
 cbar = fig4.colorbar(Contour_plot2)
 cbar.ax.set_ylabel('Covariance field of prior')
+plt.savefig('Q2-4.pdf')
+
 
 plt.tight_layout()
 plt.show()

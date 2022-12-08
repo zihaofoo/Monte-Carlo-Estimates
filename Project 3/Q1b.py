@@ -92,6 +92,9 @@ ax.set_ylabel('log Permeability, ln k(x)')
 ax.set_xlabel('X coordinate, x') 
 ax.set_xbound(lower = xobserved[0], upper = xobserved[-1])
 
+plt.savefig('Q1b-1.pdf')
+
+
 fig_a, (ax_a, ax_b) = plt.subplots(nrows = 1, ncols = 2)
 ax_a.hist(sigma_sq_init[burn_in:], bins = 20, color = 'maroon', label = 'Hyperprior of $\sigma^2$')
 ax_b.hist(sigma_sq[burn_in:], bins = 20, color = 'navy', label = 'Posterior of $\sigma^2$')
@@ -102,6 +105,8 @@ ax_a.set_xlabel('Sigma_sq, $\sigma$')
 ax_b.set_xlabel('Sigma_sq, $\sigma$') 
 ax_a.set_title('Prior of sigma')
 ax_b.set_title('Posterior of sigma')
+
+plt.savefig('Q1b-2.pdf')
 
 # n_vec = np.arange(0, 501, 1)
 # fig1, ax1 = plt.subplots(figsize = (5,5))
