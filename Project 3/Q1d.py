@@ -11,7 +11,7 @@ from pandas.plotting import scatter_matrix
 ktrue, xgrid, xobserved, Uobserved = Sub.load_data()
 
 num_deg = 25                    # Value of d
-num_MCMC = 1000                 # Number of MC steps
+num_MCMC = 3000                 # Number of MC steps
 sigma_ep = np.sqrt(10**(-4))
 F_vec = -1.0
 s_vec = Sub.source(x_vec = xobserved)
