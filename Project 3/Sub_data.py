@@ -264,3 +264,11 @@ def variance_min(num_MCMC, num_deg, xobserved, Uobserved, sigma_epsilon, right_b
         mean_var[k1] = np.mean(np.var(k_mat[burn_in:, :-1], axis = 0))
         print("Acceptance probability:", Accept / num_MCMC)
     return mean_var
+
+def int_func(t, Z_vec):
+    coeff_vec = np.array([10.0, 28.0, 8.0/3])
+    Z_out = np.zeros(Z_vec.shape, dtype = float)
+    Z_out[0] = - (coeff_vec[0] * Z_vec[0]) + (coeff_vec[0] * Z_vec[1])
+    Z_out[1] = - (Z_vec[0] * Z_vec[2]) + (coeff_vec[1] * Z_vec[0]) - Z_vec[1]
+    Z_out[2] = (Z_vec[0] * Z_vec[1]) - (coeff_vec[2] * Z_vec[2]) 
+    return Z_out
