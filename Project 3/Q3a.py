@@ -12,7 +12,7 @@ var_sigma = 10.0
 sigma_sq = 4
 n_dim = 3
 # n_ensem = np.arange(100, 2000, 200)          # M
-n_ensem = np.arange(25, 1000, 100)          # M
+n_ensem = np.arange(25, 1000, 50)          # M
 
 num_en = len(n_ensem)
 
@@ -79,4 +79,5 @@ ax.set_title('RMSE with $\delta$t = 0.05, with ' + str(num_t) +' time steps')
 ax.set_xbound(n_ensem[0], n_ensem[-1] )
 ax.set_ybound(0, int(average_RMSE_vec[0] + 1))
 ax.legend()
+plt.savefig('Q3a.pdf')
 plt.show()
