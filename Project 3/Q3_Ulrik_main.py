@@ -5,7 +5,7 @@ import numpy.linalg as la
 import Q3_Ulrik as Sub
 import matplotlib.pyplot as plt
 
-M = np.arange(25, 1000, 50)
+M = np.arange(25, 1000, 100)
 num_M = len(M)
 RMSE_mean = np.zeros(num_M)
 
