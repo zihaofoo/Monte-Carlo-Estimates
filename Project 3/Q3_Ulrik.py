@@ -18,24 +18,21 @@ def f(t, Z):
 
 # RK-4 method
 def rk4(f,z0, delta_t , steps):
-    
-    Z = np.zeros((steps+1, 3))
-    Z[0] = z0
-    t=np.linspace(0, int(delta_t*steps), steps)
 
-    for k in range(steps):
-        k1 = delta_t * f(0, Z[k])
-        k2 = delta_t * f(0, Z[k]+delta_t*k1/2)
-        k3 = delta_t * f(0,Z[k]+delta_t*k2/2)
-        k4 = delta_t * f(0,Z[k]+delta_t*k3)
-        k_tot = (k1+2*k2+2*k3+k4)/6
-        Z[k+1] = Z[k] + k_tot
+    k1 = f(0, z0)
+    k2 = f(0, z0+delta_t*k1/2)
+    k3 = f(0, z0+delta_t*k2/2)
+    k4 = f(0, z0+delta_t*k3)
+    k_tot = (k1+2*k2+2*k3+k4)/6
+    Z_next = z0 + k_tot*delta_t
     
-    return (t,Z)
+    return Z_next
+
 
 def integrate_step(v_k, stepsize):
-    v_kp1 = rk4(f,v_k, stepsize , 1)[1][-1]
+    v_kp1 = rk4(f,v_k, stepsize , 1)
     return v_kp1
+
 
 def EnKF(phi, z0, ystar, M, zstar, dt = delta_tobs): # phi integrates a step
     
@@ -78,7 +75,20 @@ def EnKF(phi, z0, ystar, M, zstar, dt = delta_tobs): # phi integrates a step
     
     return meanpos, RMSE
 
-def particlefilter(T, M, delta_tobs, ystar, zstar):
+def particlefilter(T=None, M=None, delta_tobs=None, delta_t=None):
+    
+    
+    t0 = 0
+    tf = delta_tobs*T
+    
+    t_arr = np.arange(t0, tf, delta_tobs)
+    z_0 = np.array((1,1,1))
+    sigmasq_Y = 4
+
+    
+    solve = solve_ivp(f, (t0, tf), z_0 , method='RK45', t_eval=t_arr, first_step = delta_t)
+    zstar = solve.y.T
+    ystar = zstar + multivariate_normal.rvs(mean=np.zeros(3), cov=np.identity(3)*sigmasq_Y, size=len(zstar))
     
     #initialize stuff
     x = np.zeros((T, M, 3))
@@ -90,9 +100,7 @@ def particlefilter(T, M, delta_tobs, ystar, zstar):
     for t in range(1,T):
         Phi_t = np.array([integrate_step(x[t-1, i], delta_tobs) for i in range(M) ])
         x[t] = np.array([multivariate_normal.rvs(Phi_t[i], np.identity(3)*10**(-4)) for i in range(M) ])
-        #print('before:',w)
         w *= np.array([ multivariate_normal.pdf(ystar[t], x[t, i], 4*np.identity(3)) for i in range(M)])
-        #print('after', w)
         w = w / sum(w)
         
         #check ESS condition, and if so do resampling
@@ -101,13 +109,12 @@ def particlefilter(T, M, delta_tobs, ystar, zstar):
         #RMSE
         RMSE = np.zeros(T)
         
-        #print(x[:,0])
         
         if ESS>M/10:
             #draw from multinomial
             w_copy = w.copy()
             x_copy = x.copy()
-            indx_dist = multinomial(M, w) #M long array of indices which sum to M.
+            indx_dist = np.random.multinomial(M, w) #M long array of indices which sum to M.
             start=0
             for j in range(M):
                 if indx_dist[j]==0:
@@ -115,29 +122,26 @@ def particlefilter(T, M, delta_tobs, ystar, zstar):
                 
                 num = indx_dist[j]
                 end = start + num
-                #print("Timestep:", t)
-                #print("Index:", j)
-                #print("number:", num)
                 
-                #print('before', x_copy, 'end')
                 for l in range(start, end):
                     x_copy[:t+1,l] = x[:t+1,j]
-                #print('after', x_copy, 'end')
-                #print('weight before', w_copy)
                 w_copy[start:end] = np.array([w[j] for l in range(num) ])
-                
-                #print('weight after', w_copy)
-                
                 start += num
             w = w_copy.copy()
             x = x_copy.copy()
+        w = w / sum(w)
     #end loop
     w = w/sum(w)
     meanvec = np.zeros((T,3))
     for i in range(M):
         meanvec += w[i]*x[:,i]
-    RMSE = la.norm(meanvec - zstar)/np.sqrt(3)
-    return meanvec, RMSE
+
+    # print(np.cov(x[-1,:,: ], rowvar= False))
+    RMSE_list = 0
+    for t in range(T):
+        RMSE_list  += la.norm(meanvec[t] - zstar[t])/np.sqrt(3)
         
-#particlefilter(100, 10, 0.01, y_star, z_star)
-    
+    RMSE = RMSE_list/T
+    return zstar, meanvec, RMSE
+        
+

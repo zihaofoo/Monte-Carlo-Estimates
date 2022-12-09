@@ -68,6 +68,7 @@ for i1 in range(num_en):
         RMSE_vec[j1] = norm(mean_z_vec[:, j1] - Z_vec[:, j1 + 1]) / np.sqrt(3)
     
     average_RMSE_vec[i1] = np.mean(RMSE_vec[int(num_t/2):])
+    print(np.cov(z_state[:,-1,: ]))
     print(n_ensem[i1])
 
 fig, ax = plt.subplots(figsize = (5,5))
@@ -79,5 +80,12 @@ ax.set_title('RMSE with $\delta$t = 0.05, with ' + str(num_t) +' time steps')
 ax.set_xbound(n_ensem[0], n_ensem[-1])
 ax.set_ybound(0, int(average_RMSE_vec[0] + 1))
 ax.legend()
-plt.savefig('Q3a.pdf')
+# plt.savefig('Q3a.pdf')
+
+ax1 = plt.axes(projection='3d')
+ax1.plot3D(Z_vec [0, :], Z_vec [1, :], Z_vec [2, :], 'green')
+ax1.plot3D(mean_z_vec[0, :], mean_z_vec[1, :], mean_z_vec[2, :], 'red')
+
+# plt.savefig('Q3a-2.pdf')
+
 plt.show()
