@@ -76,7 +76,7 @@ ax.plot([n_ensem[0], n_ensem[-1]], [2, 2], color = 'navy', label = 'Standard Dev
 ax.set_xlabel('Size of ensemble, M')
 ax.set_ylabel('RMSE')
 ax.set_title('RMSE with $\delta$t = 0.05, with ' + str(num_t) +' time steps')
-ax.set_xbound(n_ensem[0], n_ensem[-1] )
+ax.set_xbound(n_ensem[0], n_ensem[-1])
 ax.set_ybound(0, int(average_RMSE_vec[0] + 1))
 ax.legend()
 plt.savefig('Q3a.pdf')
